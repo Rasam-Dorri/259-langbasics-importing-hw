@@ -45,6 +45,17 @@ library(readr)
 col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 
 # ANSWER
+# Given column names:
+col_names  <-  c("trial_num","speed_actual","speed_response","correct")
+
+ds1 <- read_tsv(
+  file = "data_A/6191_1.txt",
+  col_names = col_names,
+  skip = 12,     
+  n_max = 20     # We only need 20 rows of data
+)
+
+ds1
 
 
 
@@ -55,6 +66,14 @@ col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 # Then write the new data to a CSV file in the "data_cleaned" folder
 
 # ANSWER
+# ANSWER
+library(dplyr)
+
+ds1 <- ds1 %>%
+  mutate(trial_num_100 = trial_num + 100)
+
+# Write the new data to data_cleaned folder
+write_csv(ds1, file = "data_cleaned/6191_1.csv")
 
 
 ### QUESTION 4 ----- 
@@ -64,12 +83,28 @@ col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 
 # ANSWER
 
+files <- list.files(path = "data_A", pattern = "*.txt", full.names = TRUE)
+files
+
 
 ### QUESTION 5 ----- 
 
 # Read all of the files in data_A into a single tibble called ds
 
 # ANSWER
+library(purrr)
+
+ds <- map_dfr(
+  files,
+  ~ read_tsv(
+    .x,
+    col_names = col_names,
+    skip = 12,     # Again, adjust as needed
+    n_max = 20
+  )
+)
+
+ds
 
 
 ### QUESTION 6 -----
@@ -83,6 +118,24 @@ col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 # (It should work now, but you'll see a warning because of the erroneous data point)
 
 # ANSWER
+ds <- map_dfr(
+  files,
+  ~ read_tsv(
+    .x,
+    col_names = col_names,
+    skip = 12,
+    n_max = 20,
+    col_types = cols(
+      trial_num = col_integer(),
+      speed_actual = col_character(),
+      speed_response = col_character(),
+      correct = col_logical()
+    )
+  )
+) %>%
+  mutate(trial_num_100 = trial_num + 100)  # Now it should work
+
+ds
 
 
 ### QUESTION 7 -----
@@ -93,6 +146,24 @@ col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 # Re-import the data so that filename becomes a column
 
 # ANSWER
+ds <- map_dfr(
+  files,
+  ~ read_tsv(
+    .x,
+    col_names = col_names,
+    skip = 12,
+    n_max = 20,
+    col_types = cols(
+      trial_num = col_integer(),
+      speed_actual = col_character(),
+      speed_response = col_character(),
+      correct = col_logical()
+    ),
+    id = "filename"  # This will add a column named "filename"
+  )
+)
+
+ds
 
 
 ### QUESTION 8 -----
@@ -102,4 +173,13 @@ col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 # There are two sheets of data -- import each one into a new tibble
 
 # ANSWER
+# install.packages("readxl")  # if not installed
+library(readxl)
+
+# Suppose the Excel file is named "participant_info.xlsx" in data_B
+sheet1 <- read_xlsx("data_B/participant_info.xlsx", sheet = 1)
+sheet2 <- read_xlsx("data_B/participant_info.xlsx", sheet = 2)
+
+sheet1
+sheet2
 
