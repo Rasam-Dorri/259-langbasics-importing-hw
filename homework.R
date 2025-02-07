@@ -1,5 +1,5 @@
 #PSYC 259 Homework 1 - Data Import
-#For full credit, provide answers for at least 6/8 questions
+#For full credit, provide answers for at least 6/8 questions (8/8)
 
 #List names of students collaborating with (no more than 2): 
 
@@ -57,7 +57,8 @@ ds1 <- read_tsv(
 
 ds1
 
-
+#MComment: You only need to skip 7 columns to remove the metadata, skipping 12 removes 5 rows of data
+           # Also, I wouldn't include the n_max = 20, better to bring in more data and remove later than accidentally remove early
 
 ### QUESTION 3 ----- 
 
@@ -75,6 +76,8 @@ ds1 <- ds1 %>%
 # Write the new data to data_cleaned folder
 write_csv(ds1, file = "data_cleaned/6191_1.csv")
 
+#MComment: Correct! You can also do it without dplyr, see below: 
+#Key: ds1$trial_num_100 <- ds1$trial_num + 100
 
 ### QUESTION 4 ----- 
 
@@ -86,6 +89,7 @@ write_csv(ds1, file = "data_cleaned/6191_1.csv")
 files <- list.files(path = "data_A", pattern = "*.txt", full.names = TRUE)
 files
 
+#MComment: Looks good, note you don't need the pattern command (try it and see!)
 
 ### QUESTION 5 ----- 
 
@@ -105,6 +109,9 @@ ds <- map_dfr(
 )
 
 ds
+
+#MComment: Actually readr provides a much easier way using the "files" value we just made
+ds <- read_tsv(files, skip = 7, col_names = col_names)
 
 
 ### QUESTION 6 -----
@@ -137,6 +144,8 @@ ds <- map_dfr(
 
 ds
 
+#MComment: Looks good, but see an easier way below - 
+ds <- read_tsv(fnames, skip = 7, col_names = col_names, col_types = "iccl")
 
 ### QUESTION 7 -----
 
@@ -183,3 +192,5 @@ sheet2 <- read_xlsx("data_B/participant_info.xlsx", sheet = 2)
 sheet1
 sheet2
 
+#MComment: I'd also add the column names to sheet2, see below - 
+sheet2 <- read_xlsx("data_B/participant_info.xlsx", col_names = c("participant", "test_date"), sheet = 2)
